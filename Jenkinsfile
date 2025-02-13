@@ -41,17 +41,17 @@ pipeline {
             }
         }
 
-        stage('Cleanup Unused Docker Resources') {
-            steps {
-                script {
-                    bat '''
-                    docker system prune -f
-                    docker rmi $(docker images -f "dangling=true" -q) 2>nul || echo "No dangling images to remove"
-                    '''
-                }
+       stage('Cleanup Unused Docker Resources') {
+    steps {
+        script {
+            bat '''
+            docker system prune -f
+            FOR /F "tokens=*" %%i IN ('docker images -f "dangling=true" -q') DO docker rmi %%i || echo "No dangling images to remove"
+            '''
             }
         }
     }
+}
 
     post {
         success {
