@@ -41,7 +41,7 @@ pipeline {
             }
         }
 
-       stage('Cleanup Unused Docker Resources') {
+       stage('Cleanup') {
     steps {
         script {
             bat '''
