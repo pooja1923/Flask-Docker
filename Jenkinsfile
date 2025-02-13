@@ -46,16 +46,11 @@ pipeline {
         script {
             // Clean up unused Docker resources
             bat 'docker system prune -f'
-            
-            // Get dangling images
-            def danglingImages = bat(script: 'docker images -f "dangling=true" -q', returnStdout: true).trim()
-            
-            // Remove dangling images if any
-            if (danglingImages) {
-                bat "docker rmi ${danglingImages}"
-            } else {
-                echo "No dangling images to remove"
-            }
+
+            // Remove dangling images
+            bat 'docker image prune -f'
+
+            echo "Dangling images removed."
         }
     }
 }
