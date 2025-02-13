@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "poojak19/flask-docker-app"
         CONTAINER_NAME = "flask-container"
+        DOCKER_TAG = "latest"
         DOCKER_CREDENTIALS_ID = "docker-hub-credentials" 
     }
 
@@ -17,17 +18,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    bat 'docker build -t %IMAGE_NAME% .'  
-                }
-            }
-        }
-
-        stage('Login to Docker Hub') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
-                    }
+                    bat 'docker build -t %IMAGE_NAME%:%DOCKER_TAG% .'  
                 }
             }
         }
@@ -35,15 +26,17 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    bat 'docker push %IMAGE_NAME%'
+                    withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
+                        bat 'docker push %IMAGE_NAME%:%DOCKER_TAG%'
+                    }
                 }
             }
         }
 
-      stage('Run Container') {
+       stage('Run New Container') {
             steps {
                 script {
-                    bat 'docker run -d -p 5000:5000 --name %CONTAINER_NAME% %IMAGE_NAME%'
+                    bat 'docker run -d -p 5000:5000 --name %CONTAINER_NAME% %IMAGE_NAME%:%DOCKER_TAG%'
                 }
             }
         }
