@@ -33,7 +33,7 @@ pipeline {
             }
         }
 
-       stage('Run New Container') {
+       stage('Run Container') {
             steps {
                 script {
                     bat 'docker run -d -p 5000:5000 --name %CONTAINER_NAME% %IMAGE_NAME%:%DOCKER_TAG%'
@@ -42,16 +42,16 @@ pipeline {
         }
 
        stage('Cleanup') {
-    steps {
-        script {
-            bat '''
-            docker system prune -f
-            FOR /F "tokens=*" %%i IN ('docker images -f "dangling=true" -q') DO docker rmi %%i || echo "No dangling images to remove"
-            '''
+            steps {
+                script {
+                    bat '''
+                    docker system prune -f
+                    for /f %%i in ('docker images -f "dangling=true" -q') do docker rmi %%i || echo No dangling images to remove
+                    '''
+                }
             }
         }
-    }
-}
+
 
     post {
         success {
