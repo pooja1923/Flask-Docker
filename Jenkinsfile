@@ -5,20 +5,20 @@ pipeline {
         IMAGE_NAME = "poojak19/flask-docker-app"
         CONTAINER_NAME = "flask-container"
         DOCKER_TAG = "latest"
-        DOCKER_CREDENTIALS_ID = "docker-hub-credentials" 
+        DOCKER_CREDENTIALS_ID = "docker-hub-credentials"
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/pooja1923/Flask-Docker.git'  
+                git branch: 'main', url: 'https://github.com/pooja1923/Flask-Docker.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    bat 'docker build -t %IMAGE_NAME%:%DOCKER_TAG% .'  
+                    bat 'docker build -t %IMAGE_NAME%:%DOCKER_TAG% .'
                 }
             }
         }
@@ -33,7 +33,7 @@ pipeline {
             }
         }
 
-       stage('Run Container') {
+        stage('Run Container') {
             steps {
                 script {
                     bat 'docker run -d -p 5000:5000 --name %CONTAINER_NAME% %IMAGE_NAME%:%DOCKER_TAG%'
@@ -41,7 +41,7 @@ pipeline {
             }
         }
 
-       stage('Cleanup') {
+        stage('Cleanup') {
             steps {
                 script {
                     bat '''
@@ -51,7 +51,7 @@ pipeline {
                 }
             }
         }
-
+    }
 
     post {
         success {
